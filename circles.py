@@ -136,7 +136,7 @@ def main():
   parser.add_argument('pointscircle',metavar='N', 
       type=int, nargs=1,
       help='The number of particles per circle in the sphere')
-  parser.add_argument('angles',metavar='A', 
+  parser.add_argument('--angles','-a',metavar='A', 
       type=float, nargs='*',default=[0.0],
       help='The angle of the different spheres, A in [0,90+]')
   parser.add_argument('--weight','-w',metavar='W', 
