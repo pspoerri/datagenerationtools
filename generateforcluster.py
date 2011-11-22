@@ -16,17 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import circles
-numberOfPoints = map(lambda x:2**x,range(10,13))
+numberOfPoints = map(lambda x:2**x,[14])
 radius = map(lambda x:2**x,range(4,8))
 speed  = map(lambda x:2**x,range(4,8))
 angles = [[0,10,20,30],[10,30,50,60,70]]
 weight = 1.0
 
-stime = 0.0
-etime = 2.0
-dt = 0.1
-theta = 0.5
-dumpperiod = 1
+shift = [1.0,5.0]
+numberofCircles = [20,40] ## Cylinder
+
 
 
 def filename(prefix,number,radius,speed,special):
@@ -43,4 +41,28 @@ for np in numberOfPoints:
         fname = filename("circles",np,r,s,"a"+("_".join(map(lambda x: str(x),a))))
         print fname
         f = open(fname,'w')
-        circles.printInput(f,w,x,y,z,vx,vy,vz) 
+        circles.printInput(f,w,x,y,z,vx,vy,vz)
+
+prefix = "cylinder"
+for np in numberOfPoints:
+  for r in radius:
+    for s in speed:
+      for nc in numberofCircles:
+        for sh in shift:
+          x,y,z,w,vx,vy,vz = circles.generateCylinder(np,s,nc,r,weight,s)
+          fname = filename("cylinder",np,r,s,"nc"+str(nc)+"_sh"+str(sh))
+          print fname
+          f = open(fname,'w')
+          circles.printInput(f,w,x,y,z,vx,vy,vz)
+
+prefix = "rotcircle"
+for np in numberOfPoints:
+  for r in radius:
+    for s in speed:
+      for nc in numberofCircles:
+          x,y,z,w,vx,vy,vz = circles.generateRotatedCircles(2.0*r,nc,np,r,weight,s)
+          fname = filename("rotcircle",np,r,s,"nc"+str(nc))
+          print fname
+          f = open(fname,'w')
+          circles.printInput(f,w,x,y,z,vx,vy,vz)
+
