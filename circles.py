@@ -221,12 +221,16 @@ def main():
   
 
   """ Rotated Circles """
-  circle_parser = subparsers.add_parser('rotcircles', 
+  rcircle_parser = subparsers.add_parser('rotcircles', 
     help='Create a dataset with rotated circles around the x-axis.')
 
-  circle_parser.add_argument('--ncircles','-N',metavar='NC', 
-      type=int, nargs='*',default=1,
+  rcircle_parser.add_argument('--ncircles','-n',metavar='NC', 
+      type=int, nargs='?',default=1,
       help='The number of circles')
+  
+  rcircle_parser.add_argument('--shift','-s',metavar='S',
+    type=float, nargs='?', default=None,
+    help='The distance between each element')
 
 
   """ Cylinder """
@@ -237,7 +241,7 @@ def main():
     type=float, nargs='?', default=1.0,
     help='The distance between each element')
   
-  cylinder_parser.add_argument('--ncircles','-N',metavar='NC',
+  cylinder_parser.add_argument('--ncircles','-n',metavar='NC',
     type=int, nargs='?', default=1,
     help='The distance between each element')
 
@@ -251,12 +255,18 @@ def main():
   if args.subparser_name == "cylinder":
     shift = args.shift
     number = args.ncircles
-    print args 
     x,y,z,w,vx,vy,vz =generateCylinder(points,shift,number,radius,weight,speed)  
   
   if args.subparser_name == "circles":
     angles=args.angles  
     x,y,z,w,vx,vy,vz = generateCircle(angles,points,radius,weight,speed)
+
+  if args.subparser_name == "rotcircles":
+    number = args.ncircles
+    shift = args.shift
+    if shift == None:
+      shift = radius
+    x,y,z,w,vx,vy,vz = generateRotatedCircles(shift,number,points,radius,weight,speed)
 
   """ Display the values """
   if (args.display):
