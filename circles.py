@@ -100,7 +100,32 @@ class Circle:
                 [sin(a), cos(a),0.0],
                 [0.0   , 0.0   ,1.0]])
 
-def generateCylinder(shift,points,radius,weight,speed):
+def generateRotatedCircles(shiftradius,numberofcircles,points,radius,weight,speed):
+  """ Generate rotated circles """
+  x = []
+  y = []
+  z = []
+  vx = []
+  vy = []
+  vz = []
+  
+  i = 0;  
+  angles = linspace(0.0,2.0*pi,numberofcircles+1)[0:numberofcircles]
+  for a in angles:
+    pointDstrFunction = lambda x:(x[0]+shiftradius*cos(a),x[1],x[2]+shiftradius*sin(a))
+    circle = Circle(radius,points,weight,a,speed,False,pointDstrFunction)
+    x += circle.x
+    y += circle.y
+    z += circle.z
+    vx += circle.vx
+    vy += circle.vy
+    vz += circle.vz
+    i += 1
+  
+  w = [weight]*len(x)
+  return (x,y,z,w,vx,vy,vz)
+
+def generateCylinder(points,shift,ncircles,radius,weight,speed):
   """ Generate a cylinder """
   x = []
   y = []
@@ -110,8 +135,8 @@ def generateCylinder(shift,points,radius,weight,speed):
   vz = []
   
   i = 0;  
-  
-  for s in shift:
+  sh = arange(0.0,shift*float(ncircles))[0:ncircles]
+  for s in sh:
     pointDstrFunction = lambda x:(x[0],x[1],x[2]+s)
     circle = Circle(radius,points,weight,0.0,speed,False,pointDstrFunction)
     x += circle.x
@@ -156,33 +181,23 @@ def generateCircle(angles,points,radius,weight,speed):
 def main():
   """ Main Function"""
 
-  parser = argparse.ArgumentParser(description="""Create a dataset with rotated circles around the x-axis.
-      The angles denote the angles in centigrades.""")
+  
+  parser = argparse.ArgumentParser(description="""Create a dataset""")
  
+  subparsers = parser.add_subparsers(help='commands',dest='subparser_name')
+
+  """ Arguments needed for all commands """
   parser.add_argument('--radius','-r',metavar='R',
       type=float,nargs='?',default=1.0,
       help='The radius of the sphere')
+
   parser.add_argument('pointscircle',metavar='N', 
       type=int, nargs=1,
       help='The number of particles per circle in the sphere')
-  parser.add_argument('--angles','-a',metavar='A', 
-      type=float, nargs='*',default=[0.0],
-      help='The angle of the different spheres, A in [0,90+]')
-  parser.add_argument('--weight','-w',metavar='W', 
-      type=float, nargs='?',
-      help='The weight of the individual particles',
-      default=1.0)
+
   parser.add_argument('--speed','-s',metavar='S',
       type=float, nargs='?', default=1.0,
       help='The speed of the individual particles')
-  
-  parser.add_argument('--shift','-S',metavar='SH',
-      type=float, nargs='*', default=[0.0])
-  
-  parser.add_argument('--cylinder','-C',
-      action='store_const',const=True,default=False,
-      help="""Create a cylinder instead of rotating circles
-      Don\'t forget to specify the shift.""")
 
   parser.add_argument('--display','-d',
       action='store_const',const=True,default=False,
@@ -190,17 +205,56 @@ def main():
   parser.add_argument('--file','-f',nargs='?',
       type=argparse.FileType('wb'), default=sys.stdout,
       help='The outputfile')
+
+  parser.add_argument('--weight','-w',metavar='W', 
+      type=float, nargs='?',
+      help='The weight of the individual particles',
+      default=1.0)
+
+  """ Circles """
+  circle_parser = subparsers.add_parser('circles', 
+    help='Create a dataset with rotated circles around the x-axis. The angles denote the angles in centigrades.')
+
+  circle_parser.add_argument('--angles','-a',metavar='A', 
+      type=float, nargs='*',default=[0.0],
+      help='The angle of the different spheres, A in [0,90+]')
+  
+
+  """ Rotated Circles """
+  circle_parser = subparsers.add_parser('rotcircles', 
+    help='Create a dataset with rotated circles around the x-axis.')
+
+  circle_parser.add_argument('--ncircles','-N',metavar='NC', 
+      type=int, nargs='*',default=1,
+      help='The number of circles')
+
+
+  """ Cylinder """
+  cylinder_parser = subparsers.add_parser('cylinder',
+    help='Create a dataset looking like a cylinder')
+
+  cylinder_parser.add_argument('--shift','-s',metavar='S',
+    type=float, nargs='?', default=1.0,
+    help='The distance between each element')
+  
+  cylinder_parser.add_argument('--ncircles','-N',metavar='NC',
+    type=int, nargs='?', default=1,
+    help='The distance between each element')
+
+  
   args = parser.parse_args()
-  print args
 
   points=args.pointscircle[0]
   radius=args.radius
   weight=args.weight
   speed=args.speed
-  if args.cylinder:
+  if args.subparser_name == "cylinder":
     shift = args.shift
-    x,y,z,w,vx,vy,vz = generateCylinder(shift,points,radius,weight,speed)
-  else:
+    number = args.ncircles
+    print args 
+    x,y,z,w,vx,vy,vz =generateCylinder(points,shift,number,radius,weight,speed)  
+  
+  if args.subparser_name == "circles":
     angles=args.angles  
     x,y,z,w,vx,vy,vz = generateCircle(angles,points,radius,weight,speed)
 
