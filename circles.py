@@ -110,9 +110,9 @@ def generateRotatedCircles(shiftradius,numberofcircles,points,radius,weight,spee
   vz = []
   
   i = 0;  
-  angles = linspace(0.0,2.0*pi,numberofcircles+1)[0:numberofcircles]
+  angles = linspace(0.0+pi,2*pi+pi,numberofcircles+1)[0:numberofcircles]
   for a in angles:
-    pointDstrFunction = lambda x:(x[0]+shiftradius*cos(a),x[1],x[2]+shiftradius*sin(a))
+    pointDstrFunction = lambda x:(x[0],x[1]+2.0*shiftradius*cos(a-pi),x[2]+2.0*shiftradius*sin(a-pi))
     circle = Circle(radius,points,weight,a,speed,False,pointDstrFunction)
     x += circle.x
     y += circle.y
@@ -266,6 +266,7 @@ def main():
     shift = args.shift
     if shift == None:
       shift = radius
+    
     x,y,z,w,vx,vy,vz = generateRotatedCircles(shift,number,points,radius,weight,speed)
 
   """ Display the values """
