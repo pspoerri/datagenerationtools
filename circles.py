@@ -101,6 +101,32 @@ class Circle:
                 [sin(a), cos(a),0.0],
                 [0.0   , 0.0   ,1.0]])
 
+def generateDataset(angles,points,radius,weight,speed):
+  x = []
+  y = []
+  z = []
+  vx = []
+  vy = []
+  vz = []
+  
+  i = 0;
+# circle = Circle(radius,points,weight,0.0,speed,False)
+  for a in angles:
+    if (i==0):
+      circle = Circle(radius,points,weight,float(a)/180.0*pi,speed,False)
+    else:
+      circle = Circle(radius,points,weight,float(a)/180.0*pi,speed,True)
+    x += circle.x
+    y += circle.y
+    z += circle.z
+    vx += circle.vx
+    vy += circle.vy
+    vz += circle.vz
+    i += 1
+  
+  w = [weight]*len(x)
+  return (x,y,z,w,vx,vy,vz)
+
 def main():
   parser = argparse.ArgumentParser(description='Create a dataset with rotated circles around the x-axis, the angles denote the angles in centigrades.')
  
@@ -128,35 +154,16 @@ def main():
       help='The outputfile')
   args = parser.parse_args()
   print args
+
   angles=args.angles
   points=args.pointscircle[0]
   radius=args.radius
   weight=args.weight
   speed=args.speed
-  x = []
-  y = []
-  z = []
-  vx = []
-  vy = []
-  vz = []
-  
-  i = 0;
-# circle = Circle(radius,points,weight,0.0,speed,False)
-  for a in angles:
-    if (i==0):
-      circle = Circle(radius,points,weight,float(a)/180.0*pi,speed,False)
-    else:
-      circle = Circle(radius,points,weight,float(a)/180.0*pi,speed,True)
-    x += circle.x
-    y += circle.y
-    z += circle.z
-    vx += circle.vx
-    vy += circle.vy
-    vz += circle.vz
-    i += 1
+  x,y,z,w,vx,vy,vz = generateDataset(angles,points,radius,weight,speed)
   if (args.display):
     plot(x,y,z)
-  w = [weight]*len(x)
+
   printInput(args.file,w,x,y,z,vx,vy,vz)
 if __name__ == "__main__":
     main()
