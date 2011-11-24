@@ -16,10 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import circles
-numberOfPoints = map(lambda x:2**x,range(10,13))
-radius = map(lambda x:2**x,range(4,8))
-speed  = map(lambda x:2**x,range(4,8))
-angles = [[0,10,20,30],[10,30,50,60,70]]
+from numpy import arange
+#numberOfPoints = map(lambda x:2**x,range(10,13))
+numberOfPoints = [2**13]
+#radius = map(lambda x:2**x,range(4,8))
+radius = [2**8]
+speed  = map(lambda x:2**x,arange(0,5,0.2))
+angles = [[0,10,20,30,40,50,60,70,80,90]]
 weight = 1.0
 
 stime = 0.0
