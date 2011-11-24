@@ -39,7 +39,6 @@ def filename(prefix,number,radius,speed,special):
   return prefix+"_n"+str(number)+"_r"+str(radius)+"_s"+str(speed)+"_"+special
 
 
-"""
 prefix = "circles"
 for np in numberOfPoints:
   for r in radius:
@@ -50,7 +49,7 @@ for np in numberOfPoints:
         print fname
         f = open(fname,'w')
         circles.printInput(f,w,x,y,z,vx,vy,vz)
-
+"""
 prefix = "cylinder"
 for np in numberOfPoints:
   for r in radius:
@@ -62,7 +61,7 @@ for np in numberOfPoints:
           print fname
           f = open(fname,'w')
           circles.printInput(f,w,x,y,z,vx,vy,vz)
-"""
+
 prefix = "rotcircle"
 for np in numberOfPoints:
   for r in radius:
@@ -73,4 +72,4 @@ for np in numberOfPoints:
           print fname
           f = open(fname,'w')
           circles.printInput(f,w,x,y,z,vx,vy,vz)
-
+"""
