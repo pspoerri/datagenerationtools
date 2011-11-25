@@ -22,66 +22,89 @@ import argparse
 import re
 import vtktools
 REGEX_NORMAL = "\s*1\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)"
-REGEX_WEIGHT = "\s*([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)"
+             #          1                               2                           3                         4
+REGEX_WEIGHT = "\s*([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
+                  "([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
+                  "([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
+                  "([-]?\d+[\.]?\d*[e\-\d]*)\s*"
 
 def readBlock(inFile,v,hasweight=False):
-    N = int(infile.readline())
-    A = infile.readline()
+    print "ReadingBlock, hasweight=",hasweight
+    N = int(inFile.readline().strip())
+    A = inFile.readline().strip()
     if A != "Atoms":
         raise RuntimeError("Input file has wrong format")
     if hasweight:
-        m = re.match("t(\d+\.?\d+)",inputfile)
+        tmp = inFile.readline()
+        m = re.match("t(\d+\.?\d*)",tmp)
         time = m.group(1)
 
-    x = []*N
-    y = []*N
-    z = []*N
+    x = [None]*N
+    y = [None]*N
+    z = [None]*N
+    w = None
     if hasweight:
-        w = []*N
+        w = [None]*N
+#    print w
     for i in range(0,N):
-        line = infile.readline()
+        line = inFile.readline().strip()
+#        print line
         if hasweight:
-            m = re.match(line,REGEX_WEIGHT)
-            w[i] = m.group(4)
+            m = re.split(REGEX_WEIGHT,line)
+#            print i," ",N
+            w[i] = float(m[4])
+            x[i] = float(m[1])
+            y[i] = float(m[2])
+            z[i] = float(m[3])
         else:
-            m = re.match(line,REGEX_NORMAL)
-        x[i] = m.group(1)
-        y[i] = m.group(2)
-        z[i] = m.group(3)
-   if hasweight:
-       return (t,x,y,z,w)
-   return (t,x,y,z)
+            m = re.search(REGEX_NORMAL,line)
+            x[i] = m.group(1)
+            y[i] = m.group(2)
+            z[i] = m.group(3)
+    if hasweight:
+       return (time,x,y,z,w)
+    return (t,x,y,z)
 def createOutput(inFile, outFile, hasweight=False):
-    v = VTK_XML_Serial_Unstructured()
+    v = vtktools.VTK_XML_Serial_Unstructured()
     counter = 0
     while True:
         try:
             if hasweight:
-                t,x,y,z,w = readBlock(infile,hasweight)
-                v.snapshot("outfile_{n}.vtu".format(
-                            n=counter,x,y,z,radii=w))
+                t,x,y,z,w = readBlock(inFile,v,hasweight)
+                v.snapshot("{ofile}_{n}.vtu".format(
+                            n=counter,ofile=outFile)
+                        ,x,y,z,radii=w)
             else:
-                x,y,z,w = readBlock(infile,hasweight)
-                v.snapshot("outfile_{n}.vtu".format(
-                            n=counter,x,y,z))
+                t,x,y,z = readBlock(inFile,v,hasweight)
+                v.snapshot("{ofile}_{n}.vtu".format(
+                            n=counter,ofile=outFile)
+                        ,x,y,z)
             counter += 1
+            if counter == 1:
+                print x
+                print y
+                print z
+                print w
         except:
             if counter==0:
                 raise RuntimeError("File has wrong format")
+            break
+    v.writePVD("{fname}.pvd".format(fname=outFile))
+
 def main():
     parser = argparse.ArgumentParser(description="""Create a VTK dataset out of the given XYZ-like dataset.""")
     parser.add_argument("--hasweight","-w",
             action='store_const',const=True,default=False,
             help="Special version of the file: x y z w (per row)")
 
-   parser.add_argument('infile','i',nargs=1,
-            type=argparse.FileType('r'), default=sys.stdout,
+    parser.add_argument('--infile','-i',
+            type=argparse.FileType('r'),
             help='The inputfile')
-   parser.add_argument('outfile','o',nargs=1,
+    parser.add_argument('--outfile','-o',
             type=str,
             help='The outputfile')
-
-   createOutput(args.infile,args.outfile,args.hasweight)
+    args = parser.parse_args()
+    w = args.hasweight
+    createOutput(args.infile,args.outfile,w)
 if __name__ == "__main__":
     main()
-  
