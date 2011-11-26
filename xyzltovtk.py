@@ -22,11 +22,15 @@ import argparse
 import re
 import vtktools
 REGEX_NORMAL = "\s*1\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)\s+([+-]?\d+\.?\d*)"
+
+re_normal = re.compile(REGEX_NORMAL)
              #          1                               2                           3                         4
 REGEX_WEIGHT = "\s*([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
                   "([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
                   "([-]?\d+[\.]?\d*[e\-\d]*)\s+" \
                   "([-]?\d+[\.]?\d*[e\-\d]*)\s*"
+
+re_weight = re.compile(REGEX_WEIGHT)                  
 
 def readBlock(inFile,v,hasweight=False):
     print "ReadingBlock, hasweight=",hasweight
@@ -50,14 +54,14 @@ def readBlock(inFile,v,hasweight=False):
         line = inFile.readline().strip()
 #        print line
         if hasweight:
-            m = re.split(REGEX_WEIGHT,line)
+            m = re_weight.split(line)
 #            print i," ",N
             w[i] = float(m[4])
             x[i] = float(m[1])
             y[i] = float(m[2])
             z[i] = float(m[3])
         else:
-            m = re.search(REGEX_NORMAL,line)
+            m = re_normal.search(line)
             x[i] = m.group(1)
             y[i] = m.group(2)
             z[i] = m.group(3)
@@ -80,11 +84,11 @@ def createOutput(inFile, outFile, hasweight=False):
                             n=counter,ofile=outFile)
                         ,x,y,z)
             counter += 1
-            if counter == 1:
-                print x
-                print y
-                print z
-                print w
+#            if counter == 1:
+#                print x
+#                print y
+#                print z
+#                print w
         except:
             if counter==0:
                 raise RuntimeError("File has wrong format")
