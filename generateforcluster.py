@@ -20,7 +20,7 @@ from numpy import arange
 numberOfPoints = [2**13]
 radius = [2**8]
 #speed  = map(lambda x:2**x,arange(0,5,0.1))
-speed = arange(0,20,0.5)
+speed = arange(10,20,0.5)
 angles = [[0,10,20,30,40,50,60,70,80,90]]
 
 """
