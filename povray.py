@@ -18,35 +18,67 @@
 import sys
 
 HEADER = """
-#include "shapes.inc"
 #include "colors.inc"
+#include "shapes.inc"
 #include "textures.inc"
 #include "stones.inc"
 #include "stars.inc"
 
-#declare r = 100;
-#declare w = 0;
+#declare r = 0;
+#declare w = 100;
+#declare pos = <0,0,0>;
+#declare weight = 1.0;
+
+#declare star = sphere{ 
+      <0,0,0>, 0.99 hollow on          
+      interior{
+           media{
+              absorption rgb<0.0, 0.0, 0.0>
+              scattering { 5 rgb<1.0, 1.0, 1.0> eccentricity +0.1 }
+              density { spherical 
+                  color_map{
+                    [0.00 rgb <0,0,0>]
+                    [0.05 rgb <0.1,0.1,0.5>]
+                    [0.2 rgb <0.2,0.2,0.6>]
+                    [0.5 rgb <0.5,0.5,0.8>]
+                    [0.7 rgb <0.6,0.6,0.85>]
+                    [0.9 rgb <0.7,0.7,0.95>]
+                    [1.0 rgb <1.0,1.0,1.0>]
+      } } } }
+      texture {
+         pigment {color White 1.00 filter 1.00}
+         finish {
+            reflection 0.0 
+      } }
+}
+
 """
 
 OBJECT = """
-union {{
-    sphere {{
-        <{x}, {y}, {z}>, {w}
-        texture {{
-            pigment {{color rgb <1, 1, 0.6>}}
-            finish {{ambient 1 diffuse 1}}
-        }}
-    }}
-    light_source {{
-        <{x}, {y}, {z}>
-        color White
-   }}
-}}
+#declare pos = <{x}, {y}, {z}>;
+#declare weight = {w};
+star
 """
+# OBJECT = """
+# union {{
+#     sphere {{
+#         <{x}, {y}, {z}>, {w}
+#         texture {{
+#             pigment {{color rgb <1, 1, 0.6>}}
+#             finish {{ambient 1 diffuse 1}}
+#         }}
+#     }}
+#     light_source {{
+#         <{x}, {y}, {z}>
+#         color White
+#    }}
+# }}
+# """
 
 END = """
 camera {
-	location <0, w, (-1.6 + 3.2 * clock)*r>
+/*	location <0, w, (-1.6 + 3.2 * clock)*r> */
+    location <0, w, 0>
 	right 16/9*x
 }
 """

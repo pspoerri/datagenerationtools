@@ -55,7 +55,7 @@ def readBlock(inFile,v,hasweight=False):
         if hasweight:
             m = re_weight.split(line)
 #            print i," ",N
-            w[i] = float(m[4])*1000.0
+            w[i] = float(m[4])*100.0
             x[i] = float(m[1])
             y[i] = float(m[2])
             z[i] = float(m[3])
