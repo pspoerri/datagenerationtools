@@ -75,7 +75,7 @@ class Rectangle:
     plt.show()
 
 def generate_equidistant_dataset(n, weight=1.0):
-    rect = Rectangle(n, weight)
+    rect = Rectangle(n, weight, right=n)
     return (rect.x, rect.y, rect.z, rect.w, rect.vx, rect.vy, rect.vz)
 
 def main():
