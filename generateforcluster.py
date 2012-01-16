@@ -37,7 +37,7 @@ numberofCircles = [20,40] ## Cylinder
 
 
 def filename(prefix,number,radius,speed,special):
-  return prefix+"_n"+str(number)+"_r"+str(radius)+"_s"+str(speed)+"_"+special
+  return prefix+"_n"+str(number)+"_r"+str(radius)+"_s"+str(speed)+"_"+special+".in"
 
 
 prefix = "circles"
